@@ -2,18 +2,20 @@ import React, { useState, useEffect } from "react";
 import Funciones, { getData } from "../functions/functions";
 import "./BlogList.css";
 import { addToFirebase } from "../functions/firebaseHelper";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Navigate } from "react-router-dom";
 
 function BlogList() {
   const [movies, setMovies] = useState([]);
 
   const addFavorite = async (e) => {
     console.log(e);
-    addToFirebase({ objectToSave: {e} } , "Favs");
+    addToFirebase({ objectToSave: { e } }, "Favs");
     alert("Pelicula añadida con exito");
   };
   const addWatchlater = async (e) => {
     console.log(e);
-    addToFirebase({ objectToSave: {e} } , "MustWatch");
+    addToFirebase({ objectToSave: { e } }, "MustWatch");
     alert("Pelicula añadida con exito a WatchLater");
   };
 
@@ -24,32 +26,38 @@ function BlogList() {
     };
     fetchMovies();
   }, []);
+  const { user } = useAuth0();
 
-  return (
-    <div>
-      <h1>Movie List</h1>
-      <ul className="products">
-        {movies.map((movie) => (
-          <li key={movie.id}>
-            <div className="product">
-              <img src={movie.image} />
+  if (!user) {
+    return <Navigate to="/" replace />;
+  } else {
+    return (
+      <div>
+        <h1>Movie List</h1>
+        <ul className="products">
+          {movies.map((movie) => (
+            <li key={movie.id}>
+              <div className="product">
+                <img src={movie.image} />
 
-              <a className="product-name" href={`/BlogPost/${movie.id}`}>
-                {movie.title}
-              </a>
+                <a className="product-name" href={`/BlogPost/${movie.id}`}>
+                  {movie.title}
+                </a>
 
-              <div className="product-price">{movie.rating}</div>
-              <div>
-                <button onClick={() => addFavorite(movie)}>Add fav</button>
-                <button onClick={() => addWatchlater(movie)}>Watch Later</button>
-
+                <div className="product-price">{movie.rating}</div>
+                <div>
+                  <button onClick={() => addFavorite(movie)}>Add fav</button>
+                  <button onClick={() => addWatchlater(movie)}>
+                    Watch Later
+                  </button>
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
 }
 
 export default BlogList;
