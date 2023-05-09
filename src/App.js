@@ -18,6 +18,7 @@ import MustWatch from "./components/MustWatch";
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
 import { User, useAuth0 } from "@auth0/auth0-react";
+import Nav from "./components/Nav";
 
 function App() {
   const { user } = useAuth0();
